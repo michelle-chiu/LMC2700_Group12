@@ -1,4 +1,5 @@
 # The Silent Game - Redefined
+By Michelle Chiu, Nicole Hoffman, and Patrick Sewell for LMC 2700 at Georgia Tech
 ## Concept
 The main concept we want to explore through our new game is collaboration going hand-in-hand with competition. The game will require players to work together in order to earn points, but they must be able to do slightly better than their opponent in order to receive the point instead of their opponent. This clash of cooperation and rivalry may provide an interesting perspective on the way people’s minds work while in a competitive game atmosphere, and the repercussions of leaning toward one method or the other. Visually, we want to explore the use of abstract shapes to make recognizable images, and more specifically, learn more about what contributes to someone being able to recognize an image.
 ## Overview
