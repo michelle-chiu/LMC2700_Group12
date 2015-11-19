@@ -39,13 +39,12 @@ void draw() {
       String whatClientSaid = thisClient.readString();
       if (whatClientSaid != null) {
         println(thisClient.ip() + "t" + whatClientSaid);
+        myServer.write("Hello, " + thisClient.ip());
       }
     }
   } 
-  if (myClient != null) {
+  if (myClient.available() > 0) {
     dataIn = myClient.readString();
-  }
-  if (prev != null && !(dataIn.equals(prev))) {
     print(dataIn + "");
   }
 }
