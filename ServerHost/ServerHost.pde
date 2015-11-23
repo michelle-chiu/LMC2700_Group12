@@ -15,22 +15,48 @@ String prev;
 
 String message = "";
 
+String gameState = "Waiting";
+
+String roomCode = "";
+
 PFont font = createFont("AgencyFB-Bold-48.vlw", 32);
  
 
 void setup() {
-  size(700, 400);
+  size(800, 600);
   cp5 = new ControlP5(this);
+  cp5.setAutoDraw(false);
   cp5.addTextfield("Room Code").setPosition(20, 170).setSize(400, 70).setAutoClear(false).setFont(font);
   cp5.addTextlabel("Code Finder").setPosition(20, 70).setSize(400, 70).setFont(font).setText("Host");
   cp5.addBang("Submit").setPosition(400, 170).setSize(100, 70);
   cp5.addBang("Host").setPosition(400, 70).setSize(100, 70);
   // Starts a myServer on port 25565
-  
+  background(0);
+  cp5.draw();
 }
 
 void draw() {
-  background(0);
+  if (gameState == "Waiting") {
+    cp5.draw();
+  } else if (gameState == "Connected") {
+    background(255);
+    fill(0);
+    textSize(32);
+    textFont(font);
+    textAlign(CENTER);
+    if (myServer != null) {
+      text("You are now hosting a Server.\nOther players can join using this code.", 400, 60);
+    } else {
+      text("You have successfully connected.\nWaiting for the host to launch game.", 400, 60);
+    }
+    text(roomCode, 400, 180);
+  } else if (gameState == "OtherMoving") {
+    OtherTurn.update();
+  } else if (gameState == "SelfMoving") {
+    MyTurn.update();
+  } else if (gameState == "BetweenRounds") {
+    BetweenRounds.update();
+  }
   prev = dataIn;
   if (myServer != null) {
     //You know this is the host
@@ -58,6 +84,25 @@ void fromServerAsClient(Client client) {
   message += myClient.readString();
   if (myClient.available() > 0) {return;}
   print("CLIENT HEARD: " + message);
+  //
+  if (gameState == "Connected" && message.indexOf("START") != -1) {
+    //Game is starting
+    if (message.indexOf(client.ip()) != -1) {
+      gameState = "SelfMoving";
+      print(gameState);
+      //This player is moving, take control of board.
+    } else {
+      gameState = "OtherMoving";
+      print(gameState);
+      //Other player is moving, cover the board.
+    }
+  }
+  if (gameState == "OtherMoving" && message.indexOf("POSITION") != -1) {
+    gameState = "BetweenRounds";
+    print(gameState);
+    //Update the board
+  }
+  //
   message = "";
   client.clear();
 }
@@ -76,6 +121,9 @@ void Submit() {
   url1 = cp5.get(Textfield.class,"Room Code").getText();
   myClient = new Client(this, roomCodeToIp(url1), 25565);
   myClient.write("Hello, server!");
+  clear();
+  gameState = "Connected";
+  roomCode = "Connected to room " + url1;
 }
 
 void Host() {
@@ -83,6 +131,9 @@ void Host() {
   cp5.get(Textlabel.class, "Code Finder").setText(generateRoomCode(myServer.ip()));
   myClient = new Client(this, myServer.ip(), 25565);
   myClient.write("Hello, server!");
+  clear();
+  gameState = "Connected";
+  roomCode = "Room Code: " + generateRoomCode(myServer.ip());
 }
 
 
